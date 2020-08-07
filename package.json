@@ -1,0 +1,26 @@
+{
+  "name": "json-xml-wdc",
+  "version": "1.0.0",
+  "description": "A simple Tableau Web Data Connector for connecting to JSON and XML data.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.0",
+    "xml2js": "^0.4.23"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/json-xml-wdc"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
+}
