@@ -15,12 +15,13 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/json-xml-wdc"
+    "url": "https://github.com/KeshiaRose/json-xml-wdc"
   },
   "license": "MIT",
   "keywords": [
-    "node",
-    "glitch",
-    "express"
+    "json",
+    "xml",
+    "tableau",
+    "wdc"
   ]
 }

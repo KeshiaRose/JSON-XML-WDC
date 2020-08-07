@@ -1,0 +1,6 @@
+{
+  "name": "JSON-XML-WDC",
+  "description": "A simple Tableau Web Data Connector for connecting to XML and JSON data.",
+  "repository": "https://github.com/KeshiaRose/json-xml-wdc",
+  "keywords": ["json", "xml", "tableau", "wdc"]
+}
