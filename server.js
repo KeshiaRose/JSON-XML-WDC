@@ -20,7 +20,17 @@ app.post('/xml', (req, res) => {
 
 app.post('/proxy/*', (req, res) => {
   let url = req.url.split('/proxy/')[1];
-  fetch(url, { method: req.body.method })
+  let options = {
+    method: req.body.method,
+  };
+
+  if (req.body.token) {
+    options['headers'] = {
+      Authorization: `Bearer ${req.body.token}`,
+    };
+  }
+
+  fetch(url, options)
     .then((response) => {
       if (response.ok) {
         response.text().then((body) => {

@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: "Benton Sans", Helvetica, Arial, sans-srif;
+  font-family: 'Benton Sans', Helvetica, Arial, sans-srif;
 }
 
 html,
@@ -9,7 +9,7 @@ body {
   width: 100%;
   padding: 0;
   margin: 0;
-  background-color: #FFF;
+  background-color: #fff;
   font-size: 16px;
 }
 
@@ -17,20 +17,20 @@ input,
 textarea {
   padding: 5px;
   margin: 5px 0px;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 14px;
   width: 100%;
-  resize: vertical; 
+  resize: vertical;
 }
 
 select {
   padding: 5px;
   margin: 5px 0px 5px 5px;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 14px;
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   width: 60px;
 }
 
@@ -50,31 +50,31 @@ a {
 
 .primary {
   margin-bottom: 20px;
-  background-color: #FE6568;
-  color: #FFF;
+  background-color: #fe6568;
+  color: #fff;
 }
 
 .primary:hover {
-  background-color: #D63E41;
+  background-color: #d63e41;
 }
 
 .secondary {
-  border: 1px solid #CCC;
-  background-color: #FFF;
-  color: #FE6568;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #fe6568;
 }
 
 .secondary:hover {
-  border: 1px solid #FE6568;
-  background-color: #FFCECF;
+  border: 1px solid #fe6568;
+  background-color: #ffcecf;
 }
 
 .delete {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
   padding: 5px;
   width: 60px;
   margin: 5px 0px 5px 5px;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   font-size: 14px;
 }
 
@@ -87,7 +87,7 @@ a {
 .header {
   margin-top: 0;
   margin-bottom: 10px;
-  color: #FE6568;
+  color: #fe6568;
   display: block;
   font-size: 32px;
   font-weight: bold;
@@ -99,7 +99,7 @@ a {
   height: 20px;
   line-height: 20px;
   text-align: center;
-  border: 1px solid #AAA;
+  border: 1px solid #aaa;
   color: #888;
   font-weight: bold;
   border-radius: 20px;
@@ -107,12 +107,12 @@ a {
 }
 
 .info:hover {
-  border: 1px solid #FE6568;
-  color: #FE6568;
+  border: 1px solid #fe6568;
+  color: #fe6568;
 }
 
 .card {
-  background-color: #FFF;
+  background-color: #fff;
   padding: 15px;
   width: 500px;
 }
@@ -122,7 +122,7 @@ a {
 }
 
 .error {
-  color: #D63E41;
+  color: #d63e41;
   text-align: center;
   margin-top: -10px;
   margin-bottom: 5px;
@@ -134,7 +134,7 @@ a {
 .dragdrop {
   margin: 10px 0px;
   padding: 20px 5px;
-  border: 2px dashed #CCC;
+  border: 2px dashed #ccc;
   border-radius: 3px;
   text-align: center;
 }
@@ -148,12 +148,12 @@ a {
   margin-top: 20px;
 }
 
-input[type=text] {
+input[type='text'] {
   flex: 1;
 }
 
 .field {
-  border: 1px solid #F0F0F0;
+  border: 1px solid #f0f0f0;
   padding: 3px;
   border-radius: 3px;
   margin: 3px 0px;
@@ -162,7 +162,7 @@ input[type=text] {
 }
 
 .field:hover {
-  background-color: #F5F5F5;
+  background-color: #f5f5f5;
 }
 
 .fieldText {
@@ -172,7 +172,7 @@ input[type=text] {
 .check {
   width: 20px;
   height: 20px;
-  border: 1px solid #CCC;
+  border: 1px solid #ccc;
   border-radius: 3px;
   margin-left: 10px;
 }
@@ -181,11 +181,11 @@ input[type=text] {
   width: 6px;
   margin-top: 7px;
   height: 6px;
-  background-color: #CCC !important;
+  background-color: #ccc !important;
 }
 
 .checked {
-  background-color: #FE6568;
+  background-color: #fe6568;
 }
 
 .selections {
@@ -195,7 +195,7 @@ input[type=text] {
 }
 
 .selections a {
-  color: #FE6568;
+  color: #fe6568;
   font-size: 14px;
   cursor: pointer;
   margin: 0px 10px;
@@ -203,9 +203,25 @@ input[type=text] {
 }
 
 .selections a:hover {
-  color: #D63E41;
+  color: #d63e41;
 }
 
 .hidden {
-  visibility: hidden;
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.bearerDiv {
+  display: flex;
+  align-items: center;
+}
+
+.bearerLabel {
+  margin-right: 5px;
+}
+
+.small {
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
 }

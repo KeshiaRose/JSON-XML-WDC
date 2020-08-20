@@ -31,6 +31,11 @@
             <option value="POST">POST</option>
           </select>
         </div>
+        <p class="label small" onclick="toggleAdvanced()">Advanced +</p>
+        <div class="bearerDiv hidden" id="advanced">
+          <p class="label bearerLabel">Bearer token:</p>
+          <input id="token" type="text" />
+        </div>
         <div id="dragdrop" class="dragdrop"><b>Or</b> drag & drop a JSON/XML file here</div>
         <p class="label"><b>Or</b> paste JSON/XML data below:</p>
         <textarea id="paste" rows="7" cols="50"></textarea>

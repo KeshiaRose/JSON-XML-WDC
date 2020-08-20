@@ -4,7 +4,7 @@
 // JSON & XML Web Data Connector																		 //
 // A Tableau Web Data Connector for connecting to XML and JSON data. //
 // Author: Keshia Rose                                               //
-// Version 1.0                                                       //
+// Version 1.1                                                       //
 ///////////////////////////////////////////////////////////////////////
 
 //////////////////////// Test data URLs //////////////////////////////
@@ -27,9 +27,10 @@ myConnector.getSchema = function (schemaCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method }, function (jsonData) {
+  _retrieveJsonData({ dataString, dataUrl, method, token }, function (jsonData) {
     for (let table in tables) {
       let tableData = _jsToTable(jsonData, tables[table].fields);
       let headers = tableData.headers;
@@ -79,9 +80,10 @@ myConnector.getData = function (table, doneCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method }, function (rawData) {
+  _retrieveJsonData({ dataString, dataUrl, method, token }, function (rawData) {
     let currentTable = table.tableInfo.id;
     console.log('Getting data for table ' + currentTable);
 
@@ -103,12 +105,12 @@ tableau.connectionName = 'JSON/XML Data';
 tableau.registerConnector(myConnector);
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
-async function _retrieveJsonData({ dataString, dataUrl, method }, retrieveDataCallback) {
+async function _retrieveJsonData({ dataString, dataUrl, method, token }, retrieveDataCallback) {
   let rawData = dataString;
 
   if (!cachedTableData) {
     if (dataUrl) {
-      let result = await $.post('/proxy/' + dataUrl, { method });
+      let result = await $.post('/proxy/' + dataUrl, { method, token });
       if (result.error) {
         if (tableau.phase !== 'interactive') {
           console.error(result.error);
@@ -263,7 +265,6 @@ function _objectToPaths(data) {
 // Turns an array of object path names into an object for display
 function _pathsToTree(paths) {
   let result = {};
-
   function makeTree(path, level) {
     let levels = path.split('.');
     let currentLevel = levels.slice(level, level + 1);
@@ -328,11 +329,12 @@ async function _askForFields(tableID) {
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let method = conData.method;
+  let token = tableau.password;
 
   let div = $('.fields[data-tableid=' + tableID + ']');
   let fieldsTree;
 
-  await _retrieveJsonData({ dataString, dataUrl, method }, function (rawData) {
+  await _retrieveJsonData({ dataString, dataUrl, method, token }, function (rawData) {
     fieldsTree = _pathsToTree(_objectToPaths(rawData));
   });
 
@@ -386,7 +388,6 @@ function _submitDataToTableau() {
     let tableName = ($(this).find('input[data-tableid]').val() || 'My Data').trim();
     let tableID = $(this).find('input[data-tableid]').data('tableid');
     let tableTableauID = tableName.replace(/[^A-Za-z0-9_]/g, '_');
-
     function createUniqueID(tableTableauID, tryNum) {
       let tryText = tryNum ? '_' + (tryNum + 1) : '';
       tables.hasOwnProperty(tableTableauID + tryText)
@@ -422,6 +423,10 @@ function _submitDataToTableau() {
   } else {
     _error('No fields selected.');
   }
+}
+
+function toggleAdvanced() {
+  $('#advanced').toggleClass('hidden');
 }
 
 // Toggles checkedness of field
@@ -475,6 +480,7 @@ function _next(dataString) {
   dataString = (dataString || $('#paste').val()).trim();
   let dataUrl = $('#url').val().trim();
   let method = $('#method').val();
+  let token = $('#token').val();
   if (!dataString && !dataUrl) return _error('No data entered.');
 
   if (dataString) {
@@ -503,6 +509,7 @@ function _next(dataString) {
 
   if (dataString) dataString = _checkJSONFormat(dataString);
   tableau.connectionData = JSON.stringify({ dataString, dataUrl, method });
+  tableau.password = token;
 
   _askForFields(0);
 }
