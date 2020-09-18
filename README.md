@@ -4,6 +4,8 @@ Built by [Keshia Rose](https://twitter.com/KroseKeshia)
 
 This is a simple [Web Data Connector](https://tableau.github.io/webdataconnector/docs/) for JSON and XML files, text, and URLs.
 
+URL: https://json-xml-wdc.herokuapp.com/
+
 Simply paste in your URL or data or just drag and drop a file.
 
 Next, choose which fields to bring in to Tableau. You can select or clear all or individual fields, or select the parent of a nested object to change the selection of all within in.
