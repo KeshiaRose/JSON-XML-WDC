@@ -63,5 +63,16 @@
       </div>
     </div>
     <img src="https://devplat-hit-counter.herokuapp.com/counter.png" alt="" style="display: none;" aria-hidden="true" /><!-- Hit tracker -->
+    <script>
+      // Catch browser or non-current Desktop users.
+      setTimeout(function(){
+        try {
+          var version = +tableau.platformVersion.split(".").slice(0,2).join(".");
+          if (version < 2019.4) document.body.innerHTML = "<div class='loadError'><p>This WDC only works in Tableau Desktop 2019.4 or higher.</p><p><a href='https://www.tableau.com/support/releases' target='_blank'>Update now.</a></p></div>"
+        } catch (e) {
+          document.body.innerHTML = "<div class='loadError'><p>You must open this WDC in Tableau Desktop 2019.4+ to use it.</p><p><a href='https://tableau.github.io/webdataconnector/docs/wdc_use_in_tableau.html' target='_blank'>Learn how.</a></p></div>"
+        }
+      }, 1000);
+    </script>
   </body>
 </html>

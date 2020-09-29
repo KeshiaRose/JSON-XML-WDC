@@ -225,3 +225,11 @@ input[type='text'] {
   color: #555;
   cursor: pointer;
 }
+
+.loadError {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
