@@ -4,12 +4,13 @@
 // JSON & XML Web Data Connector																		 //
 // A Tableau Web Data Connector for connecting to XML and JSON data. //
 // Author: Keshia Rose                                               //
+// GitHub: https://github.com/KeshiaRose/JSON-XML-WDC                //
 // Version 1.1                                                       //
 ///////////////////////////////////////////////////////////////////////
 
 //////////////////////// Test data URLs //////////////////////////////
-// https://json-xml-wdc.glitch.me/food.json                         //
-// https://json-xml-wdc.glitch.me/orders.xml                        //
+// https://json-xml-wdc.herokuapp.com/food.json                     //
+// https://json-xml-wdc.herokuapp.com/orders.xml                    //
 // https://api.covid19india.org/data.json                           //
 // https://covidtracking.com/api/v1/states/daily.json               //
 // https://clinicaltrials.gov/ct2/show/NCT03478891?displayxml=true  //

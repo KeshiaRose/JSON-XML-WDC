@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////////////////
+// JSON & XML Web Data Connector																		 //
+// A Tableau Web Data Connector for connecting to XML and JSON data. //
+// Author: Keshia Rose                                               //
+// GitHub: https://github.com/KeshiaRose/JSON-XML-WDC                //
+// Version 1.1                                                       //
+///////////////////////////////////////////////////////////////////////
+
 const express = require('express');
 const fetch = require('node-fetch');
 const parseString = require('xml2js').parseString;
