@@ -1,3 +1,5 @@
+![Working!](https://img.shields.io/badge/Status-Working-brightgreen)
+
 # Simple JSON/XML Web Data Connector
 
 Built by [Keshia Rose](https://twitter.com/KroseKeshia)
