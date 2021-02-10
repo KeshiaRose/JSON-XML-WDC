@@ -19,13 +19,6 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-app.post('/xml', (req, res) => {
-  let xml = req.body.xml;
-  parseString(xml, function (err, result) {
-    res.json(result);
-  });
-});
-
 app.post('/proxy/*', (req, res) => {
   let url = req.url.split('/proxy/')[1];
   let options = {
