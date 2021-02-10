@@ -1,4 +1,4 @@
-/* global tableau json2csv Papa */
+/* global tableau json2csv Papa xml2js */
 
 ///////////////////////////////////////////////////////////////////////
 // JSON & XML Web Data Connector																		 //
@@ -133,8 +133,8 @@ async function _retrieveJsonData({ dataString, dataUrl, method, token }, retriev
   };
 
   if (typeof rawData === 'string' && rawData.trim().startsWith('<')) {
-    await $.post('/xml', { xml: rawData }).done((data) => {
-      successCallback(JSON.stringify(data));
+    xml2js.parseString(rawData, function (err, result) {
+      successCallback(JSON.stringify(result));
     });
     return;
   }
@@ -556,6 +556,7 @@ $('#dragdrop')
     cancel(e);
     $(this).css('border', '2px dashed #CCC');
     $(this).css('background-color', '#FFFFFF');
+  try {
     let files = e.originalEvent.dataTransfer.files;
     let file = files[0];
     let reader = new FileReader();
@@ -563,4 +564,8 @@ $('#dragdrop')
       _next(reader.result);
     };
     reader.readAsText(file);
+  } catch (err) {
+    _error('Could not read file.');
+    console.log(err);
+  }
   });
