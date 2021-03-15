@@ -133,20 +133,28 @@ async function _retrieveJsonData(
         }
         return;
       }
-      rawData = result.body;
+      rawData =
+        result.body.charCodeAt(0) === 65279
+          ? result.body.slice(1)
+          : result.body; // Remove BOM character if present
     }
   } else {
     retrieveDataCallback(cachedTableData);
     return;
   }
   const successCallback = function(data) {
-    cachedTableData = JSON.parse(data);
+    try {
+      cachedTableData = JSON.parse(data);
+    } catch (err) {
+      _error("Error parsing JSON");
+    }
     retrieveDataCallback(cachedTableData);
   };
 
   if (typeof rawData === "string" && rawData.trim().startsWith("<")) {
     xml2js.parseString(rawData, function(err, result) {
       successCallback(JSON.stringify(result));
+      if (err) _error(err);
     });
     return;
   }
