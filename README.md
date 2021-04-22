@@ -40,3 +40,16 @@ Or you could host it locally by doing the following:
 1. [Clone](https://github.com/KeshiaRose/JSON-XML-WDC) or download and unzip this repository.
 1. Open the command line within the `JSON-XML-WDC` master folder and run `npm install` to install the node modules.
 1. Then run `npm start` to start the web server or use something like [pm2](https://pm2.keymetrics.io/) for a production environment.
+
+## How to refresh
+
+##### Tableau Server
+If you want to use this WDC on your Tableau Server you will first need to [add it to your safelist](https://help.tableau.com/current/server/en-us/datasource_wdc.htm) with the following commands:
+```
+tsm data-access web-data-connectors add --name "JSON XML WDC" --url https://json-xml-wdc.herokuapp.com:443
+tsm pending-changes apply
+```
+Note that this will require your Tableau Server to restart!
+
+##### Tableau Online
+If you want to use this WDC on Tableau Online you will need to set it up using [Tableau Bridge](https://help.tableau.com/current/online/en-us/qs_refresh_local_data.htm)
