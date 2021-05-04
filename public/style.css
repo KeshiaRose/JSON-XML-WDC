@@ -213,11 +213,19 @@ input[type='text'] {
 
 .bearerDiv {
   display: flex;
-  align-items: center;
+/*   align-items: center; */
+  flex-direction: column;
+  background-color: #EEE;
+  padding: 5px;
+  border-radius: 3px;
 }
 
 .bearerLabel {
   margin-right: 5px;
+}
+
+.advancedInput {
+  width: 100%;
 }
 
 .small {

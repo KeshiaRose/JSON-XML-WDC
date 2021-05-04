@@ -24,12 +24,19 @@ app.post("/proxy/*", async (req, res) => {
     method: req.body.method
   };
 
-  if (req.body.token) {
+  if (req.body.username) {
+    let buff = Buffer.from(req.body.username+":"+req.body.token);
+    let base64data = buff.toString('base64');
+
+    options["headers"] = {
+      Authorization: `Basic ${base64data}`
+    };
+  } else if (req.body.token) {
     options["headers"] = {
       Authorization: `Bearer ${req.body.token}`
     };
   }
-
+  
   try {
     const response = await fetch(url, options);
     if (response.ok) {

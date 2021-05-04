@@ -5,7 +5,10 @@
     <title>JSON/XML Web Data Connector</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="A simple Tableau Web Data Connector for connecting to XML and JSON data." />
+    <meta
+      name="description"
+      content="A simple Tableau Web Data Connector for connecting to XML and JSON data."
+    />
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/json2csv"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.2.0/papaparse.min.js"></script>
@@ -34,10 +37,38 @@
         </div>
         <p class="label small" onclick="toggleAdvanced()">Advanced +</p>
         <div class="bearerDiv hidden" id="advanced">
-          <p class="label bearerLabel">Bearer token:</p>
-          <input id="token" type="text" />
+          <p class="label bearerLabel">Bearer:</p>
+
+          <div class="row">
+            <div class="advancedInput">
+              <p class="label small">Token</p>
+              <input id="token" type="text" />
+            </div>
+          </div>
+
+          <div class="row">
+            <p>
+              or
+            </p>
+          </div>
+          <div class="row">
+            <p class="label bearerLabel">Basic Authentication:</p>
+          </div>
+
+          <div class="row">
+            <div class="advancedInput">
+              <p class="label small">Username</p>
+              <input id="username" type="text" />
+            </div>
+            <div class="advancedInput">
+              <p class="label small">Password</p>
+              <input id="password" type="password" />
+            </div>
+          </div>
         </div>
-        <div id="dragdrop" class="dragdrop"><b>Or</b> drag & drop a JSON/XML file here</div>
+        <div id="dragdrop" class="dragdrop">
+          <b>Or</b> drag & drop a JSON/XML file here
+        </div>
         <p class="label"><b>Or</b> paste JSON/XML data below:</p>
         <textarea id="paste" rows="7" cols="50"></textarea>
         <button class="primary" onclick="_next()">Next</button>
@@ -52,8 +83,16 @@
             <p class="label">Table Name:</p>
             <input data-tableid="0" type="text" placeholder="My Data" />
             <div class="selections">
-              <span><a onclick="_selectAll(this)" data-tableid="0">Select All</a></span>
-              <span><a onclick="_clearAll(this)" data-tableid="0">Clear All</a></span>
+              <span
+                ><a onclick="_selectAll(this)" data-tableid="0"
+                  >Select All</a
+                ></span
+              >
+              <span
+                ><a onclick="_clearAll(this)" data-tableid="0"
+                  >Clear All</a
+                ></span
+              >
             </div>
             <div class="fields" data-tableid="0">No data fields found</div>
           </div>
@@ -63,15 +102,26 @@
         <div class="error"></div>
       </div>
     </div>
-    <img src="https://devplat-hit-counter.herokuapp.com/counter.png" alt="" style="display: none;" aria-hidden="true" /><!-- Hit tracker -->
+    <img
+      src="https://devplat-hit-counter.herokuapp.com/counter.png"
+      alt=""
+      style="display: none;"
+      aria-hidden="true"
+    /><!-- Hit tracker -->
     <script>
       // Catch browser or non-current Desktop users.
-      setTimeout(function(){
+      setTimeout(function() {
         try {
-          var version = +tableau.platformVersion.split(".").slice(0,2).join(".");
-          if (version < 2019.4) document.body.innerHTML = "<div class='loadError'><p>This WDC only works in Tableau Desktop 2019.4 or higher.</p><p><a href='https://www.tableau.com/support/releases' target='_blank'>Update now.</a></p></div>"
+          var version = +tableau.platformVersion
+            .split(".")
+            .slice(0, 2)
+            .join(".");
+          if (version < 2019.4)
+            document.body.innerHTML =
+              "<div class='loadError'><p>This WDC only works in Tableau Desktop 2019.4 or higher.</p><p><a href='https://www.tableau.com/support/releases' target='_blank'>Update now.</a></p></div>";
         } catch (e) {
-          document.body.innerHTML = "<div class='loadError'><p>You must open this WDC in Tableau Desktop 2019.4+ to use it.</p><p><a href='https://tableau.github.io/webdataconnector/docs/wdc_use_in_tableau.html' target='_blank'>Learn how.</a></p></div>"
+          document.body.innerHTML =
+            "<div class='loadError'><p>You must open this WDC in Tableau Desktop 2019.4+ to use it.</p><p><a href='https://tableau.github.io/webdataconnector/docs/wdc_use_in_tableau.html' target='_blank'>Learn how.</a></p></div>";
         }
       }, 1000);
     </script>
