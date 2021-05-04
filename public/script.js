@@ -28,49 +28,53 @@ myConnector.getSchema = function(schemaCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method, token }, function(jsonData) {
-    for (let table in tables) {
-      let tableData = _jsToTable(jsonData, tables[table].fields);
-      let headers = tableData.headers;
-      let cols = [];
-      let aliases = [];
+  _retrieveJsonData(
+    { dataString, dataUrl, method, username, username, token },
+    function(jsonData) {
+      for (let table in tables) {
+        let tableData = _jsToTable(jsonData, tables[table].fields);
+        let headers = tableData.headers;
+        let cols = [];
+        let aliases = [];
 
-      function findFriendlyName(f, tryNum) {
-        let names = f.split(".");
-        let alias = names
-          .slice(names.length - tryNum, names.length)
-          .join(" ")
-          .replace(/_/g, " ");
-        if (!aliases.includes(alias)) {
-          aliases.push(alias);
-          return alias;
-        } else {
-          return findFriendlyName(f, tryNum + 1);
+        function findFriendlyName(f, tryNum) {
+          let names = f.split(".");
+          let alias = names
+            .slice(names.length - tryNum, names.length)
+            .join(" ")
+            .replace(/_/g, " ");
+          if (!aliases.includes(alias)) {
+            aliases.push(alias);
+            return alias;
+          } else {
+            return findFriendlyName(f, tryNum + 1);
+          }
         }
+
+        for (let field in headers) {
+          cols.push({
+            id: field.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_"),
+            alias: findFriendlyName(field, 1),
+            dataType: headers[field]
+          });
+        }
+
+        let tableSchema = {
+          id: table,
+          alias: tables[table].alias,
+          columns: cols
+        };
+        tableSchemas.push(tableSchema);
+        console.log("Table schema created: ", tableSchema);
       }
 
-      for (let field in headers) {
-        cols.push({
-          id: field.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_"),
-          alias: findFriendlyName(field, 1),
-          dataType: headers[field]
-        });
-      }
-
-      let tableSchema = {
-        id: table,
-        alias: tables[table].alias,
-        columns: cols
-      };
-      tableSchemas.push(tableSchema);
-      console.log("Table schema created: ", tableSchema);
+      schemaCallback(tableSchemas);
     }
-
-    schemaCallback(tableSchemas);
-  });
+  );
 };
 
 // Get the data for each table
@@ -81,10 +85,13 @@ myConnector.getData = function(table, doneCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method, token }, function(rawData) {
+  _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
+    rawData
+  ) {
     let currentTable = table.tableInfo.id;
     console.log("Getting data for table " + currentTable);
 
@@ -116,14 +123,18 @@ tableau.registerConnector(myConnector);
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
 async function _retrieveJsonData(
-  { dataString, dataUrl, method, token },
+  { dataString, dataUrl, method, username, token },
   retrieveDataCallback
 ) {
   let rawData = dataString;
 
   if (!cachedTableData) {
     if (dataUrl) {
-      let result = await $.post("/proxy/" + dataUrl, { method, token });
+      let result = await $.post("/proxy/" + dataUrl, {
+        method,
+        username,
+        token
+      });
       if (result.error) {
         if (tableau.phase !== "interactive") {
           console.error(result.error);
@@ -544,6 +555,8 @@ function _next(dataString) {
     .trim();
   let method = $("#method").val();
   let token = $("#token").val();
+  let username = $("#username").val();
+  let password = $("#password").val();
   if (!dataString && !dataUrl) return _error("No data entered.");
 
   if (dataString) {
@@ -572,7 +585,8 @@ function _next(dataString) {
 
   if (dataString) dataString = _checkJSONFormat(dataString);
   tableau.connectionData = JSON.stringify({ dataString, dataUrl, method });
-  tableau.password = token;
+  tableau.username = username;
+  tableau.password = token || password;
 
   _askForFields(0);
 }
