@@ -33,7 +33,7 @@ myConnector.getSchema = function(schemaCallback) {
   let tableSchemas = [];
 
   _retrieveJsonData(
-    { dataString, dataUrl, method, username, username, token },
+    { dataString, dataUrl, method, username, token },
     function(jsonData) {
       for (let table in tables) {
         let tableData = _jsToTable(jsonData, tables[table].fields);
@@ -368,12 +368,13 @@ async function _askForFields(tableID) {
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let method = conData.method;
+  let username = tableau.username || "";
   let token = tableau.password;
 
   let div = $(".fields[data-tableid=" + tableID + "]");
   let fieldsTree;
 
-  await _retrieveJsonData({ dataString, dataUrl, method, token }, function(
+  await _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
     rawData
   ) {
     fieldsTree = _pathsToTree(_objectToPaths(rawData));
