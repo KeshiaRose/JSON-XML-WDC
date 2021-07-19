@@ -120,6 +120,8 @@ myConnector.getData = function(table, doneCallback) {
 
 tableau.connectionName = "JSON/XML Data";
 tableau.registerConnector(myConnector);
+window._tableau.triggerInitialization &&
+  window._tableau.triggerInitialization(); // Make sure WDC is initialized properly
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
 async function _retrieveJsonData(
