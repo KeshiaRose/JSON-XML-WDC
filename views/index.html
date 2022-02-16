@@ -37,6 +37,9 @@
         </div>
         <p class="label small" onclick="toggleAdvanced()">Advanced +</p>
         <div class="bearerDiv hidden" id="advanced">
+
+          <h3>Authentication</h3>
+
           <p class="label bearerLabel">Bearer:</p>
 
           <div class="row">
@@ -65,6 +68,10 @@
               <input id="password" type="password" />
             </div>
           </div>
+
+          <h3>Headers</h3>
+          <button class="primary" onclick="_addHeader()">+</button>
+          <div id="headers"></div>
         </div>
         <div id="dragdrop" class="dragdrop">
           <b>Or</b> drag & drop a JSON/XML file here

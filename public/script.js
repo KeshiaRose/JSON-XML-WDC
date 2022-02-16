@@ -28,12 +28,13 @@ myConnector.getSchema = function(schemaCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
   _retrieveJsonData(
-    { dataString, dataUrl, method, username, token },
+    { dataString, dataUrl, method, username, token, headers },
     function(jsonData) {
       for (let table in tables) {
         let tableData = _jsToTable(jsonData, tables[table].fields);
@@ -85,11 +86,12 @@ myConnector.getData = function(table, doneCallback) {
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
+  _retrieveJsonData({ dataString, dataUrl, method, username, token, headers }, function(
     rawData
   ) {
     let currentTable = table.tableInfo.id;
@@ -125,7 +127,7 @@ window._tableau.triggerInitialization &&
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
 async function _retrieveJsonData(
-  { dataString, dataUrl, method, username, token },
+  { dataString, dataUrl, method, username, token, headers },
   retrieveDataCallback
 ) {
   let rawData = dataString;
@@ -135,8 +137,10 @@ async function _retrieveJsonData(
       let result = await $.post("/proxy/" + dataUrl, {
         method,
         username,
-        token
+        token,
+        headers
       });
+      
       if (result.error) {
         if (tableau.phase !== "interactive") {
           console.error(result.error);
@@ -370,13 +374,14 @@ async function _askForFields(tableID) {
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
 
   let div = $(".fields[data-tableid=" + tableID + "]");
   let fieldsTree;
 
-  await _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
+  await _retrieveJsonData({ dataString, dataUrl, method, username, token, headers }, function(
     rawData
   ) {
     fieldsTree = _pathsToTree(_objectToPaths(rawData));
@@ -550,6 +555,37 @@ function _clearAll(e) {
   });
 }
 
+function _addHeader() {
+  let headerID = 0;
+  $("div[data-headerid]").each(function() {
+    headerID =
+      $(this).data("headerid") > headerID ? $(this).data("headerid") : headerID;
+  });
+  headerID++;
+
+  let headerTemplate = `
+    <div class="row" data-headerid="${headerID}">
+      <div class="advancedInput">
+        <p class="label small">Name</p>
+        <input class="header-name" type="text" />
+      </div>
+      <div class="advancedInput">
+        <p class="label small">Value</p>
+        <input class="header-value" type="text" />
+      </div>
+      <div>
+        <button class="primary" onclick="_removeHeader(${headerID})">-</button>
+      </div>
+    </div>
+  `;
+
+  $("div#headers").append(headerTemplate);
+}
+
+function _removeHeader(headerIndex) {
+  $(`div[data-headerid=${headerIndex}]`).remove();
+}
+
 // Takes data, does basic vaildation and goes to field selection phase
 function _next(dataString) {
   dataString = (dataString || $("#paste").val()).trim();
@@ -560,6 +596,16 @@ function _next(dataString) {
   let token = $("#token").val();
   let username = $("#username").val();
   let password = $("#password").val();
+
+  let headers = { };
+  $("#headers .row").each(function() {
+      headerName = $(this).find(".header-name").val().trim();
+      headerValue = $(this).find(".header-value").val().trim();
+      if (headerName && headerValue) {
+        headers[headerName] = headerValue;
+      }
+  });
+
   if (!dataString && !dataUrl) return _error("No data entered.");
 
   if (dataString) {
@@ -587,7 +633,7 @@ function _next(dataString) {
   }
 
   if (dataString) dataString = _checkJSONFormat(dataString);
-  tableau.connectionData = JSON.stringify({ dataString, dataUrl, method });
+  tableau.connectionData = JSON.stringify({ dataString, dataUrl, method, headers });
   tableau.username = username;
   tableau.password = token || password;
 
