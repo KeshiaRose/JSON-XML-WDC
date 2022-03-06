@@ -21,20 +21,21 @@ let cachedTableData; // Always a JSON object
 let myConnector = tableau.makeConnector();
 
 // Create the schemas for each table
-myConnector.getSchema = function(schemaCallback) {
+myConnector.getSchema = function (schemaCallback) {
   console.log("Creating table schemas.");
   let conData = JSON.parse(tableau.connectionData);
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
   _retrieveJsonData(
-    { dataString, dataUrl, method, username, token },
-    function(jsonData) {
+    { dataString, dataUrl, method, username, token, headers },
+    function (jsonData) {
       for (let table in tables) {
         let tableData = _jsToTable(jsonData, tables[table].fields);
         let headers = tableData.headers;
@@ -59,14 +60,14 @@ myConnector.getSchema = function(schemaCallback) {
           cols.push({
             id: field.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_"),
             alias: findFriendlyName(field, 1),
-            dataType: headers[field]
+            dataType: headers[field],
           });
         }
 
         let tableSchema = {
           id: table,
           alias: tables[table].alias,
-          columns: cols
+          columns: cols,
         };
         tableSchemas.push(tableSchema);
         console.log("Table schema created: ", tableSchema);
@@ -78,44 +79,46 @@ myConnector.getSchema = function(schemaCallback) {
 };
 
 // Get the data for each table
-myConnector.getData = function(table, doneCallback) {
+myConnector.getData = function (table, doneCallback) {
   console.log("Getting data.");
   let conData = JSON.parse(tableau.connectionData);
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let tables = conData.tables;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
-  _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
-    rawData
-  ) {
-    let currentTable = table.tableInfo.id;
-    console.log("Getting data for table " + currentTable);
+  _retrieveJsonData(
+    { dataString, dataUrl, method, username, token, headers },
+    function (rawData) {
+      let currentTable = table.tableInfo.id;
+      console.log("Getting data for table " + currentTable);
 
-    let tableData = _jsToTable(rawData, tables[currentTable].fields);
-    let newRows = [];
-    for (let row of tableData.rows) {
-      let newRow = {};
-      for (let prop in row) {
-        newRow[prop.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_")] =
-          row[prop];
+      let tableData = _jsToTable(rawData, tables[currentTable].fields);
+      let newRows = [];
+      for (let row of tableData.rows) {
+        let newRow = {};
+        for (let prop in row) {
+          newRow[prop.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_")] =
+            row[prop];
+        }
+        newRows.push(newRow);
       }
-      newRows.push(newRow);
-    }
 
-    let row_index = 0;
-    let size = 10000;
-    while (row_index < newRows.length) {
-      table.appendRows(newRows.slice(row_index, size + row_index));
-      row_index += size;
-      tableau.reportProgress("Getting row: " + row_index);
-    }
+      let row_index = 0;
+      let size = 10000;
+      while (row_index < newRows.length) {
+        table.appendRows(newRows.slice(row_index, size + row_index));
+        row_index += size;
+        tableau.reportProgress("Getting row: " + row_index);
+      }
 
-    doneCallback();
-  });
+      doneCallback();
+    }
+  );
 };
 
 tableau.connectionName = "JSON/XML Data";
@@ -125,7 +128,7 @@ window._tableau.triggerInitialization &&
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
 async function _retrieveJsonData(
-  { dataString, dataUrl, method, username, token },
+  { dataString, dataUrl, method, username, token, headers },
   retrieveDataCallback
 ) {
   let rawData = dataString;
@@ -135,7 +138,8 @@ async function _retrieveJsonData(
       let result = await $.post("/proxy/" + dataUrl, {
         method,
         username,
-        token
+        token,
+        headers,
       });
       if (result.error) {
         if (tableau.phase !== "interactive") {
@@ -155,7 +159,7 @@ async function _retrieveJsonData(
     retrieveDataCallback(cachedTableData);
     return;
   }
-  const successCallback = function(data) {
+  const successCallback = function (data) {
     try {
       cachedTableData = JSON.parse(data);
     } catch (err) {
@@ -165,7 +169,7 @@ async function _retrieveJsonData(
   };
 
   if (typeof rawData === "string" && rawData.trim().startsWith("<")) {
-    xml2js.parseString(rawData, function(err, result) {
+    xml2js.parseString(rawData, function (err, result) {
       successCallback(JSON.stringify(result));
       if (err) _error(err);
     });
@@ -179,7 +183,7 @@ function _csv2table(csv) {
   let lines = Papa.parse(csv, {
     delimiter: ",",
     newline: "\n",
-    dynamicTyping: true
+    dynamicTyping: true,
   }).data;
   let fields = lines.shift();
   let headers = {};
@@ -269,7 +273,7 @@ function _jsToTable(data, fields) {
   paths = Array.from(paths);
   const json2csvParser = new json2csv.Parser({
     fields,
-    transforms: [json2csv.transforms.unwind({ paths })]
+    transforms: [json2csv.transforms.unwind({ paths })],
   });
   const csvData = json2csvParser.parse(data);
   return _csv2table(csvData);
@@ -332,7 +336,7 @@ function _pathsToTree(paths) {
 
 function _addTable() {
   let tableID = 0; // Scan highest table id number then +1
-  $("input[data-tableid]").each(function() {
+  $("input[data-tableid]").each(function () {
     tableID =
       $(this).data("tableid") > tableID ? $(this).data("tableid") : tableID;
   });
@@ -342,8 +346,9 @@ function _addTable() {
     <div class="table" data-tableid="${tableID}">
       <p class="label">Table Name</p>
       <div class="row">
-        <input data-tableid="${tableID}" type="text" placeholder="My Data (${tableID +
-    1})"/>
+        <input data-tableid="${tableID}" type="text" placeholder="My Data (${
+    tableID + 1
+  })"/>
         <button class="delete" data-tableid="${tableID}" onclick="_deleteTable(this)">Delete</button>
       </div>
       <div class="selections">
@@ -370,17 +375,19 @@ async function _askForFields(tableID) {
   let dataString = conData.dataString;
   let dataUrl = conData.dataUrl;
   let method = conData.method;
+  let headers = conData.headers;
   let username = tableau.username || "";
   let token = tableau.password;
 
   let div = $(".fields[data-tableid=" + tableID + "]");
   let fieldsTree;
 
-  await _retrieveJsonData({ dataString, dataUrl, method, username, token }, function(
-    rawData
-  ) {
-    fieldsTree = _pathsToTree(_objectToPaths(rawData));
-  });
+  await _retrieveJsonData(
+    { dataString, dataUrl, method, username, token, headers },
+    function (rawData) {
+      fieldsTree = _pathsToTree(_objectToPaths(rawData));
+    }
+  );
 
   if (!fieldsTree) return;
 
@@ -391,10 +398,9 @@ async function _askForFields(tableID) {
       let showCheck = Object.keys(fields[field]).length === 0;
       output += `<div class='field' onclick='${
         showCheck ? "_toggleCheck(this)" : "_toggleChildCheck(this)"
-      }' data-checked='false' style="padding-left:${spacing}px;" data-tableid='${tableID}' data-visible='${showCheck}' data-field='${(parent ===
-      ""
-        ? ""
-        : parent + ".") + field}'>
+      }' data-checked='false' style="padding-left:${spacing}px;" data-tableid='${tableID}' data-visible='${showCheck}' data-field='${
+        (parent === "" ? "" : parent + ".") + field
+      }'>
         ${
           showCheck
             ? '<div class="check"></div>'
@@ -441,15 +447,11 @@ function _submitDataToTableau() {
   let tables = {};
 
   // Make sure no duplicate table names
-  $(".table").each(function() {
+  $(".table").each(function () {
     let tableName = (
-      $(this)
-        .find("input[data-tableid]")
-        .val() || "My Data"
+      $(this).find("input[data-tableid]").val() || "My Data"
     ).trim();
-    let tableID = $(this)
-      .find("input[data-tableid]")
-      .data("tableid");
+    let tableID = $(this).find("input[data-tableid]").data("tableid");
     let tableTableauID = tableName.replace(/[^A-Za-z0-9_]/g, "_");
     function createUniqueID(tableTableauID, tryNum) {
       let tryText = tryNum ? "_" + (tryNum + 1) : "";
@@ -457,7 +459,7 @@ function _submitDataToTableau() {
         ? createUniqueID(tableTableauID, tryNum + 1)
         : (tables[tableTableauID + tryText] = {
             id: tableID,
-            alias: tableName + tryText
+            alias: tableName + tryText,
           });
     }
     createUniqueID(tableTableauID, null);
@@ -465,7 +467,7 @@ function _submitDataToTableau() {
 
   for (let table in tables) {
     let fields = [];
-    $(".field[data-tableid=" + tables[table].id + "]").each(function() {
+    $(".field[data-tableid=" + tables[table].id + "]").each(function () {
       if ($(this).data("visible") && $(this).data("checked") === "true") {
         fields.push($(this).data("field"));
       }
@@ -496,9 +498,7 @@ function toggleAdvanced() {
 function _toggleCheck(e) {
   let checked = $(e).data("checked") === "true";
   $(e).data("checked", checked ? "false" : "true");
-  $(e)
-    .find(".check")
-    .toggleClass("checked");
+  $(e).find(".check").toggleClass("checked");
 }
 
 // Toggles checkedness for all fields under a parent
@@ -509,21 +509,17 @@ function _toggleChildCheck(e) {
     `[data-tableID='${parentTableID}'][data-field^='${parentField}'][data-field!='${parentField}']`
   );
   let childCount = children.length;
-  let checkedCount = children.filter(function(i) {
+  let checkedCount = children.filter(function (i) {
     return $(this).data("checked") === "true";
   }).length;
 
-  children.each(function() {
+  children.each(function () {
     if (childCount === checkedCount) {
       $(this).data("checked", "false");
-      $(this)
-        .find(".check")
-        .removeClass("checked");
+      $(this).find(".check").removeClass("checked");
     } else {
       $(this).data("checked", "true");
-      $(this)
-        .find(".check")
-        .addClass("checked");
+      $(this).find(".check").addClass("checked");
     }
   });
 }
@@ -531,35 +527,69 @@ function _toggleChildCheck(e) {
 // Selects all fields
 function _selectAll(e) {
   let tableID = $(e).data("tableid");
-  $(".field[data-tableid=" + tableID + "]").each(function() {
+  $(".field[data-tableid=" + tableID + "]").each(function () {
     $(this).data("checked", "true");
-    $(this)
-      .find(".check")
-      .addClass("checked");
+    $(this).find(".check").addClass("checked");
   });
 }
 
 // Clears all checked fields
 function _clearAll(e) {
   let tableID = $(e).data("tableid");
-  $(".field[data-tableid=" + tableID + "]").each(function() {
+  $(".field[data-tableid=" + tableID + "]").each(function () {
     $(this).data("checked", "false");
-    $(this)
-      .find(".check")
-      .removeClass("checked");
+    $(this).find(".check").removeClass("checked");
   });
+}
+
+function _addHeader() {
+  let headerID = 0;
+  $("div[data-headerid]").each(function () {
+    headerID =
+      $(this).data("headerid") > headerID ? $(this).data("headerid") : headerID;
+  });
+  headerID++;
+
+  let headerTemplate = `
+    <div class="row" data-headerid="${headerID}">
+      <div class="advancedInput">
+        <p class="label small">Name</p>
+        <input class="header-name" type="text" />
+      </div>
+      <div class="advancedInput">
+        <p class="label small">Value</p>
+        <input class="header-value" type="text" />
+      </div>
+      <div>
+        <button class="smallBtn" onclick="_removeHeader(${headerID})">X</button>
+      </div>
+    </div>
+  `;
+
+  $("div#headers").append(headerTemplate);
+}
+
+function _removeHeader(headerIndex) {
+  $(`div[data-headerid=${headerIndex}]`).remove();
 }
 
 // Takes data, does basic vaildation and goes to field selection phase
 function _next(dataString) {
   dataString = (dataString || $("#paste").val()).trim();
-  let dataUrl = $("#url")
-    .val()
-    .trim();
+  let dataUrl = $("#url").val().trim();
   let method = $("#method").val();
   let token = $("#token").val();
   let username = $("#username").val();
   let password = $("#password").val();
+  let headers = {};
+  $("#headers .row").each(function () {
+    let headerName = $(this).find(".header-name").val().trim();
+    let headerValue = $(this).find(".header-value").val().trim();
+    if (headerName && headerValue) {
+      headers[headerName] = headerValue;
+    }
+  });
+
   if (!dataString && !dataUrl) return _error("No data entered.");
 
   if (dataString) {
@@ -581,13 +611,19 @@ function _next(dataString) {
   }
 
   if (dataUrl) {
-    const urlRegex = /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
+    const urlRegex =
+      /^(?:(?:(?:https?|ftp):)?\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:[/?#]\S*)?$/i;
     const result = dataUrl.match(urlRegex);
     if (result === null) return _error("URL is not valid.");
   }
 
   if (dataString) dataString = _checkJSONFormat(dataString);
-  tableau.connectionData = JSON.stringify({ dataString, dataUrl, method });
+  tableau.connectionData = JSON.stringify({
+    dataString,
+    dataUrl,
+    method,
+    headers,
+  });
   tableau.username = username;
   tableau.password = token || password;
 
@@ -596,10 +632,7 @@ function _next(dataString) {
 
 // Shows error message below submit button
 function _error(message) {
-  $(".error")
-    .fadeIn("fast")
-    .delay(3000)
-    .fadeOut("slow");
+  $(".error").fadeIn("fast").delay(3000).fadeOut("slow");
   $(".error").html(message);
   $("html, body").animate({ scrollTop: $(document).height() }, "fast");
 }
@@ -613,28 +646,28 @@ function cancel(e) {
 $(document)
   .on("dragenter", cancel)
   .on("drop", cancel)
-  .on("dragover", function(e) {
+  .on("dragover", function (e) {
     cancel(e);
     $("#dragdrop").css("border", "2px dashed #FE6568");
   })
-  .on("dragleave", function(e) {
+  .on("dragleave", function (e) {
     cancel(e);
     $("#dragdrop").css("border", "2px dashed #CCC");
   });
 
 $("#dragdrop")
   .on("dragenter", cancel)
-  .on("dragover", function(e) {
+  .on("dragover", function (e) {
     cancel(e);
     $(this).css("border", "2px solid #FE6568");
     $(this).css("background-color", "#FFCECF");
   })
-  .on("dragleave", function(e) {
+  .on("dragleave", function (e) {
     cancel(e);
     $(this).css("border", "2px dashed #CCC");
     $(this).css("background-color", "#FFFFFF");
   })
-  .on("drop", function(e) {
+  .on("drop", function (e) {
     cancel(e);
     $(this).css("border", "2px dashed #CCC");
     $(this).css("background-color", "#FFFFFF");
@@ -642,7 +675,7 @@ $("#dragdrop")
       let files = e.originalEvent.dataTransfer.files;
       let file = files[0];
       let reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         _next(reader.result);
       };
       reader.readAsText(file);

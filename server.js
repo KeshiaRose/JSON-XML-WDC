@@ -21,22 +21,18 @@ app.get("/", (req, res) => {
 app.post("/proxy/*", async (req, res) => {
   const url = req.url.split("/proxy/")[1];
   let options = {
-    method: req.body.method
+    method: req.body.method,
   };
+  options["headers"] = req.body.headers || {};
 
   if (req.body.username) {
-    let buff = Buffer.from(req.body.username+":"+req.body.token);
-    let base64data = buff.toString('base64');
-
-    options["headers"] = {
-      Authorization: `Basic ${base64data}`
-    };
+    let buff = Buffer.from(req.body.username + ":" + req.body.token);
+    let base64data = buff.toString("base64");
+    options["headers"]["Authorization"] = `Basic ${base64data}`;
   } else if (req.body.token) {
-    options["headers"] = {
-      Authorization: `Bearer ${req.body.token}`
-    };
+    options["headers"]["Authorization"] = `Bearer ${req.body.token}`;
   }
-  
+
   try {
     const response = await fetch(url, options);
     if (response.ok) {

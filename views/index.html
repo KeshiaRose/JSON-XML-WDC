@@ -37,6 +37,7 @@
         </div>
         <p class="label small" onclick="toggleAdvanced()">Advanced +</p>
         <div class="bearerDiv hidden" id="advanced">
+          <p class="smallTitle">Authentication</p>
           <p class="label bearerLabel">Bearer:</p>
 
           <div class="row">
@@ -47,9 +48,7 @@
           </div>
 
           <div class="row">
-            <p>
-              or
-            </p>
+            <p>or</p>
           </div>
           <div class="row">
             <p class="label bearerLabel">Basic Authentication:</p>
@@ -65,6 +64,10 @@
               <input id="password" type="password" />
             </div>
           </div>
+          <br />
+          <p class="smallTitle">Headers</p>
+          <div id="headers"></div>
+          <button class="secondary" onclick="_addHeader()">Add Header +</button>
         </div>
         <div id="dragdrop" class="dragdrop">
           <b>Or</b> drag & drop a JSON/XML file here
@@ -75,12 +78,12 @@
         <div class="error"></div>
       </div>
 
-      <div class="card" id="fieldInput" style="display: none;">
+      <div class="card" id="fieldInput" style="display: none">
         <span class="header">JSON/XML Connector</span>
         <span>Select which columns to bring in.</span>
         <div class="tables" id="tables">
           <div class="table" data-tableid="0">
-            <p class="label">Table Name:</p>
+            <p class="label">Table Name:</p><i class="label small">Note: You can have multiple tables. Add more tables at the bottom of this page.</i>
             <input data-tableid="0" type="text" placeholder="My Data" />
             <div class="selections">
               <span
@@ -105,12 +108,12 @@
     <img
       src="https://devplat-hit-counter.herokuapp.com/counter.png"
       alt=""
-      style="display: none;"
+      style="display: none"
       aria-hidden="true"
     /><!-- Hit tracker -->
     <script>
       // Catch browser or non-current Desktop users.
-      setTimeout(function() {
+      setTimeout(function () {
         try {
           var version = +tableau.platformVersion
             .split(".")

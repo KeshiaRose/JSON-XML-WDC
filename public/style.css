@@ -1,6 +1,6 @@
 * {
   box-sizing: border-box;
-  font-family: 'Benton Sans', Helvetica, Arial, sans-srif;
+  font-family: "Benton Sans", Helvetica, Arial, sans-srif;
 }
 
 html,
@@ -31,7 +31,7 @@ select {
   border-radius: 3px;
   font-size: 14px;
   background-color: #f0f0f0;
-  width: 60px;
+  width: 80px;
 }
 
 button {
@@ -46,6 +46,13 @@ button {
 
 a {
   text-decoration: none;
+}
+
+.smallTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+  margin-bottom: 5px;
 }
 
 .primary {
@@ -67,6 +74,12 @@ a {
 .secondary:hover {
   border: 1px solid #fe6568;
   background-color: #ffcecf;
+}
+
+.smallBtn {
+  height: 30px;
+  margin-top: 18px;
+  line-height: 12px;
 }
 
 .delete {
@@ -148,7 +161,7 @@ a {
   margin-top: 20px;
 }
 
-input[type='text'] {
+input[type="text"] {
   flex: 1;
 }
 
@@ -213,9 +226,9 @@ input[type='text'] {
 
 .bearerDiv {
   display: flex;
-/*   align-items: center; */
+  /*   align-items: center; */
   flex-direction: column;
-  background-color: #EEE;
+  background-color: #eee;
   padding: 5px;
   border-radius: 3px;
 }
