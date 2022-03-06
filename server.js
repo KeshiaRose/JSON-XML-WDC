@@ -25,7 +25,6 @@ app.post("/proxy/*", async (req, res) => {
   };
   options["headers"] = req.body.headers || {};
 
-  options["headers"] = req.body.headers || { };
   if (req.body.username) {
     let buff = Buffer.from(req.body.username + ":" + req.body.token);
     let base64data = buff.toString("base64");
