@@ -106,6 +106,7 @@ myConnector.getData = function (table, doneCallback) {
             row[prop];
         }
         newRows.push(newRow);
+
       }
 
       let row_index = 0;
@@ -141,6 +142,7 @@ async function _retrieveJsonData(
         token,
         headers,
       });
+      
       if (result.error) {
         if (tableau.phase !== "interactive") {
           console.error(result.error);
@@ -562,6 +564,37 @@ function _addHeader() {
       </div>
       <div>
         <button class="smallBtn" onclick="_removeHeader(${headerID})">X</button>
+      </div>
+    </div>
+  `;
+
+  $("div#headers").append(headerTemplate);
+}
+
+function _removeHeader(headerIndex) {
+  $(`div[data-headerid=${headerIndex}]`).remove();
+}
+
+function _addHeader() {
+  let headerID = 0;
+  $("div[data-headerid]").each(function() {
+    headerID =
+      $(this).data("headerid") > headerID ? $(this).data("headerid") : headerID;
+  });
+  headerID++;
+
+  let headerTemplate = `
+    <div class="row" data-headerid="${headerID}">
+      <div class="advancedInput">
+        <p class="label small">Name</p>
+        <input class="header-name" type="text" />
+      </div>
+      <div class="advancedInput">
+        <p class="label small">Value</p>
+        <input class="header-value" type="text" />
+      </div>
+      <div>
+        <button class="primary" onclick="_removeHeader(${headerID})">-</button>
       </div>
     </div>
   `;
