@@ -53,3 +53,10 @@ Note that this will require your Tableau Server to restart!
 
 ##### Tableau Online
 If you want to use this WDC on Tableau Online you will need to set it up using [Tableau Bridge](https://help.tableau.com/current/online/en-us/qs_refresh_local_data.htm)
+
+## Questions?
+[Open an issue!](https://github.com/KeshiaRose/JSON-XML-WDC/issues/new)
+
+#### Support
+
+I gladly host this WDC for free but if you would like to chip in for hosting you can [buy me some cheese🧀](https://www.buymeacoffee.com/KeshiaRose)!
