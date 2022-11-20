@@ -29,6 +29,7 @@ myConnector.getSchema = function (schemaCallback) {
   let tables = conData.tables;
   let method = conData.method;
   let headers = conData.headers;
+  let allStrings = conData.allStrings ? conData.allStrings : false;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
@@ -37,7 +38,7 @@ myConnector.getSchema = function (schemaCallback) {
     { dataString, dataUrl, method, username, token, headers },
     function (jsonData) {
       for (let table in tables) {
-        let tableData = _jsToTable(jsonData, tables[table].fields);
+        let tableData = _jsToTable(jsonData, tables[table].fields, allStrings);
         let headers = tableData.headers;
         let cols = [];
         let aliases = [];
@@ -60,6 +61,7 @@ myConnector.getSchema = function (schemaCallback) {
           cols.push({
             id: field.replace(/\$/g, "attr").replace(/[^A-Za-z0-9_]/g, "_"),
             alias: findFriendlyName(field, 1),
+            // dataType: tableau.dataTypeEnum.string
             dataType: headers[field],
           });
         }
@@ -87,6 +89,7 @@ myConnector.getData = function (table, doneCallback) {
   let tables = conData.tables;
   let method = conData.method;
   let headers = conData.headers;
+  let allStrings = conData.allStrings ? conData.allStrings : false;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
@@ -97,7 +100,7 @@ myConnector.getData = function (table, doneCallback) {
       let currentTable = table.tableInfo.id;
       console.log("Getting data for table " + currentTable);
 
-      let tableData = _jsToTable(rawData, tables[currentTable].fields);
+      let tableData = _jsToTable(rawData, tables[currentTable].fields, allStrings);
       let newRows = [];
       for (let row of tableData.rows) {
         let newRow = {};
@@ -179,11 +182,11 @@ async function _retrieveJsonData(
 }
 
 // Turns tabular data into json for Tableau input
-function _csv2table(csv) {
+function _csv2table(csv, allStrings) {
   let lines = Papa.parse(csv, {
     delimiter: ",",
     newline: "\n",
-    dynamicTyping: true,
+    dynamicTyping: !allStrings,
   }).data;
   let fields = lines.shift();
   let headers = {};
@@ -196,8 +199,11 @@ function _csv2table(csv) {
     for (let field in fields) {
       let header = headers[fields[field]];
       let value = line[field];
-
-      if (
+      
+      if (allStrings) {
+        obj[fields[field]] = value;
+        header.string = header.string ? header.string + 1 : 1;
+      } else if (
         value === "" ||
         value === '""' ||
         value === "null" ||
@@ -262,7 +268,7 @@ function _csv2table(csv) {
 }
 
 // Flattens out the JSON data to a  tabular format
-function _jsToTable(data, fields) {
+function _jsToTable(data, fields, allStrings) {
   let paths = new Set();
   for (let field of fields) {
     let levels = field.split(".");
@@ -276,7 +282,7 @@ function _jsToTable(data, fields) {
     transforms: [json2csv.transforms.unwind({ paths })],
   });
   const csvData = json2csvParser.parse(data);
-  return _csv2table(csvData);
+  return _csv2table(csvData, allStrings);
 }
 
 // Grabs all the possible paths for properties in an object
@@ -589,6 +595,7 @@ function _next(dataString) {
       headers[headerName] = headerValue;
     }
   });
+  let allStrings = $('#allstrings').is(':checked');
 
   if (!dataString && !dataUrl) return _error("No data entered.");
 
@@ -623,6 +630,7 @@ function _next(dataString) {
     dataUrl,
     method,
     headers,
+    allStrings,
   });
   tableau.username = username;
   tableau.password = token || password;
