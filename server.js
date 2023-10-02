@@ -23,7 +23,7 @@ app.post("/proxy/*", async (req, res) => {
   let options = {
     method: req.body.method,
   };
-  if (req.body.postBody && req.body.postBody != null && req.body.postBody !== undefined) options.body = JSON.stringify(req.body.postBody)
+  if (req.body.method == "POST" && req.body.postBody && req.body.postBody != null && req.body.postBody !== undefined) options.body = JSON.stringify(req.body.postBody)
   options["headers"] = req.body.headers || {};
 
   if (req.body.username) {
