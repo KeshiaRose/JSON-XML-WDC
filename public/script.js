@@ -30,12 +30,13 @@ myConnector.getSchema = function (schemaCallback) {
   let method = conData.method;
   let headers = conData.headers;
   let allStrings = conData.allStrings ? conData.allStrings : false;
+  let postBody = conData.postBody || null;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
   _retrieveJsonData(
-    { dataString, dataUrl, method, username, token, headers },
+    { dataString, dataUrl, method, username, token, headers, postBody },
     function (jsonData) {
       for (let table in tables) {
         let tableData = _jsToTable(jsonData, tables[table].fields, allStrings);
@@ -90,12 +91,13 @@ myConnector.getData = function (table, doneCallback) {
   let method = conData.method;
   let headers = conData.headers;
   let allStrings = conData.allStrings ? conData.allStrings : false;
+  let postBody = conData.postBody || null;
   let username = tableau.username || "";
   let token = tableau.password;
   let tableSchemas = [];
 
   _retrieveJsonData(
-    { dataString, dataUrl, method, username, token, headers },
+    { dataString, dataUrl, method, username, token, headers, postBody },
     function (rawData) {
       let currentTable = table.tableInfo.id;
       console.log("Getting data for table " + currentTable);
@@ -131,7 +133,7 @@ window._tableau.triggerInitialization &&
 
 // Gets data from URL or string. Inputs are all strings. Always returns JSON data, even if XML input.
 async function _retrieveJsonData(
-  { dataString, dataUrl, method, username, token, headers },
+  { dataString, dataUrl, method, username, token, headers, postBody },
   retrieveDataCallback
 ) {
   let rawData = dataString;
@@ -143,6 +145,7 @@ async function _retrieveJsonData(
         username,
         token,
         headers,
+        postBody
       });
       if (result.error) {
         if (tableau.phase !== "interactive") {
@@ -382,6 +385,7 @@ async function _askForFields(tableID) {
   let dataUrl = conData.dataUrl;
   let method = conData.method;
   let headers = conData.headers;
+  let postBody = conData.postBody || "";
   let username = tableau.username || "";
   let token = tableau.password;
 
@@ -389,7 +393,7 @@ async function _askForFields(tableID) {
   let fieldsTree;
 
   await _retrieveJsonData(
-    { dataString, dataUrl, method, username, token, headers },
+    { dataString, dataUrl, method, username, token, headers, postBody },
     function (rawData) {
       fieldsTree = _pathsToTree(_objectToPaths(rawData));
     }
@@ -596,6 +600,7 @@ function _next(dataString) {
     }
   });
   let allStrings = $('#allstrings').is(':checked');
+  let postBody = $("#post_body").val().trim();
 
   if (!dataString && !dataUrl) return _error("No data entered.");
 
@@ -631,6 +636,7 @@ function _next(dataString) {
     method,
     headers,
     allStrings,
+    postBody
   });
   tableau.username = username;
   tableau.password = token || password;
