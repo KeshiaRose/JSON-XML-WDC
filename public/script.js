@@ -601,6 +601,14 @@ function _next(dataString) {
   });
   let allStrings = $('#allstrings').is(':checked');
   let postBody = $("#post_body").val().trim();
+  try {
+    if (postBody && postBody != null && postBody != undefined && postBody.length > 0) {
+      postBody = JSON.parse(postBody)
+      postBody = JSON.stringify(postBody)
+    }
+  } catch (e) {
+    return _error("Failed to parse POST body. " + e);
+  }
 
   if (!dataString && !dataUrl) return _error("No data entered.");
 
@@ -646,7 +654,7 @@ function _next(dataString) {
 
 // Shows error message below submit button
 function _error(message) {
-  $(".error").fadeIn("fast").delay(3000).fadeOut("slow");
+  $(".error").fadeIn("fast").delay(5000).fadeOut("slow");
   $(".error").html(message);
   $("html, body").animate({ scrollTop: $(document).height() }, "fast");
 }
