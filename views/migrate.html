@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>JSON/XML Web Data Connector — Moved</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <span class="header">JSON/XML Connector</span>
+        <p>This WDC has moved to a new URL. Please update your connections:</p>
+        <p style="word-break:break-all;">
+          <strong>New URL:</strong>
+          <a href="https://json-xml-wdc.onrender.com" target="_blank">
+            https://json-xml-wdc.onrender.com
+          </a>
+        </p>
+        <p>To update an existing Tableau data source:</p>
+        <ol>
+          <li>Open the workbook in Tableau Desktop.</li>
+          <li>Go to <strong>Data &rarr; [your data source] &rarr; Edit Connection</strong>.</li>
+          <li>Replace the URL with <code>https://json-xml-wdc.onrender.com</code> and reconnect.</li>
+        </ol>
+        <p>If you use this WDC on Tableau Server, update your safelist command:</p>
+        <pre style="background:#f0f0f0;padding:10px;border-radius:3px;font-size:12px;overflow-x:auto;">tsm data-access web-data-connectors add --name "JSON XML WDC" --url https://json-xml-wdc.onrender.com:443
+tsm pending-changes apply</pre>
+        <p class="small">Questions? <a href="https://github.com/KeshiaRose/JSON-XML-WDC/issues/new">Open an issue on GitHub.</a></p>
+      </div>
+    </div>
+  </body>
+</html>
