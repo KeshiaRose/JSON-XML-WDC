@@ -28,11 +28,28 @@ When Tableau first launched Web Data Connectors, there was a sample that allowed
 - Data brought in from a file will not refresh, but URLs will
 - No incremental extract refreshes
 
+## How to refresh
+
+##### Tableau Server
+
+If you want to use this WDC on your Tableau Server you will first need to [add it to your safelist](https://help.tableau.com/current/server/en-us/datasource_wdc.htm) with the following commands:
+
+```
+tsm data-access web-data-connectors add --name "JSON XML WDC" --url https://json-xml-wdc.onrender.com:443
+tsm pending-changes apply
+```
+
+Note that this will require your Tableau Server to restart!
+
+##### Tableau Online
+
+If you want to use this WDC on Tableau Online you will need to set it up using [Tableau Bridge](https://help.tableau.com/current/online/en-us/qs_refresh_local_data.htm)
+
 ## How to deploy your own
 
 I suggest deploying your own version of this WDC so you can have a dedicated application for your own use. Here are a few options for spinning up your own:
 
-1. [Deploy it on Render](https://render.com/deploy?repo=https://github.com/KeshiaRose/json-xml-wdc)
+1. [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/KeshiaRose/Basic-CSV-WDC)
 
 Or you could host it locally by doing the following:
 
@@ -41,22 +58,10 @@ Or you could host it locally by doing the following:
 1. Open the command line within the `JSON-XML-WDC` master folder and run `npm install` to install the node modules.
 1. Then run `npm start` to start the web server or use something like [pm2](https://pm2.keymetrics.io/) for a production environment.
 
-## How to refresh
-
-##### Tableau Server
-If you want to use this WDC on your Tableau Server you will first need to [add it to your safelist](https://help.tableau.com/current/server/en-us/datasource_wdc.htm) with the following commands:
-```
-tsm data-access web-data-connectors add --name "JSON XML WDC" --url https://json-xml-wdc.onrender.com:443
-tsm pending-changes apply
-```
-Note that this will require your Tableau Server to restart!
-
-##### Tableau Online
-If you want to use this WDC on Tableau Online you will need to set it up using [Tableau Bridge](https://help.tableau.com/current/online/en-us/qs_refresh_local_data.htm)
-
 ## Questions?
+
 [Open an issue!](https://github.com/KeshiaRose/JSON-XML-WDC/issues/new)
 
 #### Support
 
-I gladly make this WDC available for free but if you would like to show some support you can [buy me some cheese🧀](https://www.buymeacoffee.com/KeshiaRose)!
+If you would like to show some support for this free WDC you can [buy me some cheese🧀](https://www.buymeacoffee.com/KeshiaRose)!
