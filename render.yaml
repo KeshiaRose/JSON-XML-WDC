@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: json-xml-wdc
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
