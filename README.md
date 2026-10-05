@@ -1,5 +1,7 @@
 ![Working!](https://img.shields.io/badge/Status-Working-brightgreen)
 
+[![Deploy to Railyard](https://app.railyard.run/deploy/badge)](https://app.railyard.run/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC)
+
 # Simple JSON/XML Web Data Connector
 
 Built by [Keshia Rose](https://keshiarose.com)
