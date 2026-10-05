@@ -1,6 +1,6 @@
 ![Working!](https://img.shields.io/badge/Status-Working-brightgreen)
 
-[![Deploy to Railyard](https://app.railyard.run/deploy/badge)](https://app.railyard.run/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC)
+[![Deploy to Railyard](https://app.railyard.run/deploy/badge)](https://app.railyard.run/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC)
 
 # Simple JSON/XML Web Data Connector
 
@@ -51,7 +51,7 @@ If you want to use this WDC on Tableau Online you will need to set it up using [
 
 I suggest deploying your own version of this WDC so you can have a dedicated application for your own use. Here are a few options for spinning up your own:
 
-1. [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/KeshiaRose/Basic-CSV-WDC)
+[![Deploy to Railyard](https://app.railyard.run/deploy/badge)](https://app.railyard.run/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC) [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/KeshiaRose/JSON-XML-WDC)
 
 Or you could host it locally by doing the following:
 
