@@ -8,9 +8,28 @@
 
 const express = require("express");
 const fetch = require("node-fetch");
+const dns = require("dns");
+const net = require("net");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const isHeroku = !!process.env.DYNO;
+
+// Reject requests aimed at private/internal/link-local addresses to prevent SSRF.
+function isPrivateIP(ip) {
+  if (net.isIPv4(ip)) {
+    const parts = ip.split(".").map(Number);
+    return (
+      parts[0] === 10 ||
+      parts[0] === 127 ||
+      parts[0] === 0 ||
+      (parts[0] === 169 && parts[1] === 254) ||
+      (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) ||
+      (parts[0] === 192 && parts[1] === 168)
+    );
+  }
+  const lower = ip.toLowerCase();
+  return lower === "::1" || lower.startsWith("fc") || lower.startsWith("fd") || lower.startsWith("fe80");
+}
 
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -29,6 +48,27 @@ app.post("/proxy/*", async (req, res) => {
     return;
   }
   const url = req.url.split("/proxy/")[1];
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(url);
+  } catch (e) {
+    res.status(400).send({ error: "Invalid URL" });
+    return;
+  }
+  if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+    res.status(400).send({ error: "Invalid URL protocol" });
+    return;
+  }
+  try {
+    const { address } = await dns.promises.lookup(parsedUrl.hostname);
+    if (isPrivateIP(address)) {
+      res.status(400).send({ error: "Requests to private or internal addresses are not allowed" });
+      return;
+    }
+  } catch (e) {
+    res.status(400).send({ error: "Unable to resolve host" });
+    return;
+  }
   let options = {
     method: req.body.method,
   };
